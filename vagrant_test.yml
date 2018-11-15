@@ -1,0 +1,7 @@
+---
+- name: test vagrant dynamic inventory
+  hosts: all
+  become: True
+  tasks:
+    - name: task whoami
+      shell: whoami

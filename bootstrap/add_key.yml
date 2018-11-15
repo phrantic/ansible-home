@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+  
+
+  vars:
+     ssh_user: 'phrantic'
+     
+  remote_user: "{{ ssh_user }}"
+
+
+  tasks:
+   
+  -name: set authorized key took from file 
+   autorzied_key:
+      user: "{{i ssh_user }}"
+      state: present
+      key: "{{ lookup('file','/home/phrantic/.ssh/id_ras.pub' }}"
+
+  -name: add sudo
+   lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^{{ssh_user}}.*'
+      line: '{{ssh_user}} ALL=(root) NOPASSWD: ALL'

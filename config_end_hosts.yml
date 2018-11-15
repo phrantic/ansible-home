@@ -1,0 +1,62 @@
+---
+- hosts: blackwolf
+  become: yes
+  become_user: root
+  remote_user: vagrant
+
+  vars:
+    ssh_user: vagrant
+
+  tasks:
+
+  - debug: var=ansible_all_ipv4_addresses
+
+  - name: add ssh user
+    user: 
+     name: "{{ ssh_user }}"
+     shell: /bin/bash
+  
+  - name: set authorized key took from file
+    authorized_key:
+      user: "{{ ssh_user }}"
+      state: present
+      key: "{{ lookup('file','/home/phrantic/.ssh/id_rsa.pub') }}"
+
+  - name: add sudo
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^{{ssh_user}}.*'
+      line: '{{ssh_user}} ALL=(root) NOPASSWD: ALL'
+
+      
+  - name: update servers to the latest RHEL version
+    yum:
+      name: "*"
+      state: latest   
+  
+  - name: install epel repo
+    yum:
+      name: epel-release
+      state: present
+
+  - name: Add docker repository
+    get_url: 
+      url: http://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/
+
+  - name: install net-tools docker-ce ansible
+    yum:
+      name:
+       - net-tools
+       - docker-ce
+       - docker-python
+       - git
+      state: present
+
+  - name: start docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+  

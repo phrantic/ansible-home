@@ -1,0 +1,5 @@
+#[webservers]
+#testserver ansible_host=127.0.0.1 ansible_port=2222
+[blackwolf]
+vagrant3 ansible_host=192.168.0.20 
+vagrant4 ansible_host=192.168.0.21
